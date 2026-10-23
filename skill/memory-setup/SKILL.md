@@ -9,6 +9,10 @@ Read [runtime acquisition](../memory-workflow/references/runtime.md) and
 [schema](../memory-workflow/references/schema.md). Confirm the chosen database
 and operator. Missing configuration during a task is not permission to initialize.
 
+For explicit setup outside Paseo, set `HG_SQLITE`, `HG_EXT`, `HG_DB`, `HG_SKILLS`,
+and `HG_OPERATOR` from the user's chosen paths and confirmed identity. Then define
+the inline runtime functions. Do not substitute sample paths or invent `HG_AGENT`.
+
 ```sh
 # New managed database only. Parent directory must exist; never use gqlite --init.
 # Keep HG_DB explicit. Existing initialized/unmanaged stores reject bootstrap.

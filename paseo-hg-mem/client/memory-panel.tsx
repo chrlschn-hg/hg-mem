@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Text, View } from "react-native";
 import { useRpc, useSettings, type PluginWorkspacePanelProps } from "@getpaseo/plugin/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useIsFetching, useQueryClient } from "@tanstack/react-query";
 import { memoryExplore, type MemoryDraft, type MemoryRecord } from "../shared/contracts";
 import { memorySettings } from "../shared/settings";
 import {
@@ -39,6 +39,7 @@ import { LayoutChoices, LayoutTrigger, MemoryToolbar, NodePicker, type OpenMenu 
 import { Action, Chip, StateBlock, focusControl } from "./parts";
 import type { ScrollMemory } from "./scroll-memory";
 import { createStyles } from "./styles";
+import { refreshLoadedExpansion } from "./refresh-memory";
 import {
   EMPTY_DRAFT,
   EMPTY_GRAPH,
@@ -116,6 +117,11 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
 
   const explore = useRpc(memoryExplore);
   const queryClient = useQueryClient();
+  const fetching = useIsFetching({ queryKey: [MEMORY_KEY, host.id] });
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshNotice, setRefreshNotice] = useState<{ error: boolean; text: string } | null>(null);
+  const refreshAttempt = useRef(0);
+  const refreshBusy = useRef(false);
 
   const page = useMemoryBrowse(host.id, context, query, offset, PAGE_SIZE, usable);
   const pageRecords = useMemo(() => page.data?.items ?? [], [page.data]);
@@ -160,6 +166,8 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
   useEffect(() => {
     setStack([]);
     setAnchorId(null);
+    setRefreshNotice(null);
+    ++refreshAttempt.current;
   }, [query, workspaceId]);
 
   // The disclosures belong to the graph view. Leaving the graph, or leaving Memories, closes whichever one is open.
@@ -174,6 +182,45 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
     setGraph((current) => (current.generation === generation ? current : { ...EMPTY_GRAPH, generation }));
   }, [generation]);
   const scopedGraph: GraphState = graph.generation === generation ? graph : EMPTY_GRAPH;
+
+  async function refreshMemory() {
+    if (refreshBusy.current || save.isPending || fetching > 0) return;
+    refreshBusy.current = true;
+    const attempt = ++refreshAttempt.current;
+    const started = generation;
+    setRefreshing(true);
+    setRefreshNotice(null);
+    try {
+      await withDeadline((async () => {
+        await queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, host.id] }, { throwOnError: true });
+        const refreshed = await Promise.all(Object.entries(scopedGraph.expansions).map(async ([key, previous]) => {
+          const id = key.slice(previous.relation.length + 1);
+          const result = await refreshLoadedExpansion(previous, (offsetLoaded, limit) => queryClient.fetchQuery({
+            queryKey: [MEMORY_KEY, host.id, "graph", previous.relation, id, context.workspaceId, context.cwd, offsetLoaded, limit],
+            queryFn: () => explore({ id, relation: previous.relation, context, offset: offsetLoaded, limit }),
+            staleTime: 0,
+          }));
+          return [key, result] as const;
+        }));
+        if (refreshAttempt.current !== attempt) return;
+        setGraph(current => {
+          if (current.generation !== started) return current;
+          const expansions = { ...current.expansions, ...Object.fromEntries(refreshed) };
+          // No-op refresh keeps the model and canvas props unchanged, including its camera.
+          return JSON.stringify(expansions) === JSON.stringify(current.expansions) ? current : { ...current, expansions };
+        });
+      })(), EXPANSION_DEADLINE_MS);
+      if (refreshAttempt.current === attempt) setRefreshNotice({ error: false, text: "Memory refreshed." });
+    } catch (error) {
+      if (refreshAttempt.current === attempt) {
+        ++refreshAttempt.current; // A timed-out expansion must not later replace retained graph data.
+        setRefreshNotice({ error: true, text: `Refresh incomplete. Some views may show the last loaded copy. ${errorMessage(error)}` });
+      }
+    } finally {
+      refreshBusy.current = false;
+      setRefreshing(false);
+    }
+  }
 
   // Runs after the commit that unmounted the focused control. A node choice goes to the inspector, or to the Nodes trigger
   // when nothing in the inspector can take focus. A Layout choice returns to the Layout trigger.
@@ -279,7 +326,7 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
     try {
       const result = await withDeadline(
         queryClient.fetchQuery({
-          queryKey: [MEMORY_KEY, host.id, "graph", relation, node.id, context.workspaceId, context.cwd, offsetLoaded],
+          queryKey: [MEMORY_KEY, host.id, "graph", relation, node.id, context.workspaceId, context.cwd, offsetLoaded, EXPANSION_LIMIT],
           queryFn: () => explore({ id: node.id, relation, context, offset: offsetLoaded, limit: EXPANSION_LIMIT }),
           staleTime: 30_000,
         }),
@@ -384,7 +431,7 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
   }
 
   const health = status.data;
-  if (status.isError) {
+  if (status.isError && !health) {
     return (
       <View style={styles.root}>
         <StateBlock styles={styles} title="Could not check memory" body={errorMessage(status.error)}>
@@ -552,7 +599,7 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
             modelError={built.error}
             selectedId={scopedGraph.selectedId}
             onSelect={selectNode}
-            pageStatus={page.data === undefined && !page.isError ? "loading" : page.isError ? "error" : "ready"}
+            pageStatus={page.data !== undefined ? "ready" : page.isError ? "error" : "loading"}
             pageError={page.isError ? errorMessage(page.error) : null}
             onRetryPage={() => void page.refetch()}
             onUseList={() => setResultView("list")}
@@ -702,21 +749,31 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
     </View>
   );
   const newButton = <Action styles={styles} tone="primary" label="New memory" onPress={startCreate} />;
+  const refreshButton = mode !== "help" ? (
+    <Action
+      styles={styles}
+      tone="link"
+      label={refreshing ? "Refreshing…" : "Refresh"}
+      onPress={() => void refreshMemory()}
+      disabled={refreshing || fetching > 0 || save.isPending}
+    />
+  ) : null;
   const header = destinationVisible && singlePane ? (
-    <View style={styles.toolbarRow}>{identity}</View>
+    <View style={styles.toolbarRow}>{identity}{refreshButton}</View>
   ) : headerMerged ? (
     <View style={styles.toolbarRow}>
       {identity}
       <View style={styles.actionGroup}>
         {tabs}
         {newButton}
+        {refreshButton}
       </View>
     </View>
   ) : (
     <View style={styles.headerStack}>
       <View style={styles.headerRow}>
         {identity}
-        {newButton}
+        <View style={styles.actionGroup}>{refreshButton}{newButton}</View>
       </View>
       {tabs}
     </View>
@@ -735,6 +792,11 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
       }}
     >
       {header}
+      {refreshNotice ? (
+        <Text accessibilityLiveRegion="polite" style={refreshNotice.error ? styles.muted : styles.visuallyHidden}>
+          {refreshNotice.text}
+        </Text>
+      ) : null}
       {toolbarVisible ? toolbarRegion : null}
       {singlePane ? (
         <View style={styles.fill}>

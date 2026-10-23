@@ -34,6 +34,9 @@ create/connect the store. Initialization refuses unmanaged databases.
 Choose **Install or update memory skills** to publish the five `memory-*` skills
 for agents on this host. Recognized old skills are archived; modified copies are
 preserved and reported. Open a new agent session afterward. No daemon restart.
+Setup's **Agent sessions** section reports launch delivery and failures. Existing
+agents need a session refresh to receive changed `HG_*` values; reloading the plugin
+alone does not update their processes. Skills explain direct SQLite CLI use.
 
 Download the extension from the [official release](https://github.com/colliery-io/graphqlite/releases/tag/v0.12.0).
 The required asset is `graphqlite-macos-arm64.dylib`; SHA-256:
@@ -44,6 +47,8 @@ Open the **Memory** workspace tab, or use `/memory architecture`. **Memories**
 offers List and Graph; **Instructions** lists applicable required items independently
 of search; **Help** explains the concepts. Select a node to inspect it. Expand
 connections explicitly. Layout → Split keeps the inspector beside the graph.
+Use **Refresh** after agent or CLI writes. It reloads current views and loaded
+connections while keeping your search, page, selection, and layout.
 
 ![Memory list and header](docs/screenshots/memories.png)
 ![Graph and selected topic](docs/screenshots/graph.png)

@@ -65,6 +65,15 @@ export const memoryInstallSkills = defineRpc({
   name: 'memory.install_skills', input: z.object({}),
   output: z.object({ message: z.string(), directories: z.array(z.string()), migrated: z.array(z.string()), warnings: z.array(z.string()) }),
 });
+export const IntegrationAttemptSchema = z.object({
+  at: z.string(), agentId: z.string(), provider: z.string(), reason: z.string(), purpose: z.enum(['interactive', 'history']),
+  state: z.enum(['injected', 'skipped', 'error']), message: z.string(),
+});
+export type IntegrationAttempt = z.infer<typeof IntegrationAttemptSchema>;
+export const memoryIntegrationStatus = defineRpc({
+  name: 'memory.integration', input: z.object({}),
+  output: z.object({ lastAttempt: IntegrationAttemptSchema.nullable(), lastFailure: IntegrationAttemptSchema.nullable(), attempts: z.array(IntegrationAttemptSchema).max(50) }),
+});
 export const memoryInitialize = defineRpc({
   name: 'memory.initialize', input: z.object({ context: MemoryContextSchema.optional() }), output: HealthSchema,
 });

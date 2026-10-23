@@ -23,7 +23,7 @@
     "generate:skills": "node ../tools/generate-assets.mjs",
     "check:skills": "node ../tools/check-skills.mjs",
     "generate": "npm run generate:recipes && npm run generate:skills",
-    "test:graph": "node --import tsx --test ../tests/graph-model.test.mts"
+    "test:graph": "node --import tsx --test ../tests/graph-model.test.mts ../tests/refresh-memory.test.mts"
   },
   "devDependencies": {
     "@getpaseo/client": "0.12.0",

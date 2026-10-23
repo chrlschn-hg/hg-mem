@@ -11,7 +11,7 @@ import {
   SettingsSwitch,
 } from "@getpaseo/plugin/client/ui";
 import { memorySettings, type MemorySettings } from "../shared/settings";
-import { useHostState, useInitializeMemory, useInstallMemorySkills, useMemoryCatalog, useMemoryStatus, useMemoryVerify } from "./hooks";
+import { useHostState, useInitializeMemory, useInstallMemorySkills, useMemoryCatalog, useMemoryIntegrationStatus, useMemoryStatus, useMemoryVerify } from "./hooks";
 import { errorMessage } from "./labels";
 
 export function MemorySetup({ host }: PluginSurfaceProps) {
@@ -22,6 +22,7 @@ export function MemorySetup({ host }: PluginSurfaceProps) {
   const verify = useMemoryVerify();
   const initialize = useInitializeMemory(host.id);
   const installSkills = useInstallMemorySkills(host.id);
+  const integration = useMemoryIntegrationStatus(host.id, online);
   const catalog = useMemoryCatalog(host.id, online && health?.state === "ready");
 
   const saved = settings.status === "ready" ? settings.values : null;
@@ -170,6 +171,35 @@ export function MemorySetup({ host }: PluginSurfaceProps) {
               error={initialize.isError ? errorMessage(initialize.error) : null}
             />
           ) : null}
+        </SettingsCard>
+      </SettingsSection>
+
+      <SettingsSection title="Agent sessions">
+        <SettingsCard>
+          <SettingsRow
+            label="Latest session attempt"
+            hint={integration.data?.lastAttempt
+              ? `${integration.data.lastAttempt.state} · ${integration.data.lastAttempt.provider} · ${integration.data.lastAttempt.reason} · ${integration.data.lastAttempt.agentId}\n${integration.data.lastAttempt.at}\n${integration.data.lastAttempt.message}`
+              : "No interactive session result recorded since this plugin loaded. Start a new agent session to load launch settings. This does not restart Paseo."}
+            error={integration.isError ? errorMessage(integration.error) : null}
+          />
+          {integration.data?.attempts.filter(attempt => attempt.purpose === "interactive").slice(0, 5).map(attempt => (
+            <SettingsRow
+              key={attempt.agentId}
+              label={`${attempt.provider} · ${attempt.agentId}`}
+              hint={`${attempt.state} · ${attempt.reason} · ${attempt.at}`}
+            />
+          ))}
+          {integration.data?.lastFailure ? (
+            <SettingsRow
+              label="Last integration error since plugin load"
+              error={`${integration.data.lastFailure.provider} · ${integration.data.lastFailure.agentId}\n${integration.data.lastFailure.at}\n${integration.data.lastFailure.message}`}
+            />
+          ) : null}
+          <SettingsRow
+            label="Using the shell"
+            hint="Launch delivery is not proof that a shell tool sees HG_* variables. Start a new agent session to load updated launch settings. Memory's Refresh button only reloads data. If the shell is still missing variables, check the provider's shell environment policy. Do not reconstruct settings or agent identity in a script."
+          />
         </SettingsCard>
       </SettingsSection>
 

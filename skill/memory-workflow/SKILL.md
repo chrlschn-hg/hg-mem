@@ -11,11 +11,13 @@ Start here. [Recall](../memory-recall/SKILL.md) before acting;
 ```text
 # Required: HG_SKILLS, HG_DB, HG_SQLITE, HG_EXT, HG_OPERATOR.
 # HG_AGENT identifies this agent for observed/inferred claims.
-# Missing environment/database: report unavailable; do not guess paths or initialize.
+# HG_MEMORY_ERROR set or missing environment/database: stop memory operations and report it.
+# Do not parse Paseo settings, reconstruct HG_* values, or initialize to recover.
 ```
 
-Load the functions in [runtime.md](references/runtime.md), retaining the provided
-`HG_*` values. Use `pwd -P` for `cwd`; use provided project/session IDs in `scopes`.
+Run the environment check in [runtime.md](references/runtime.md), then define its
+two functions directly in your shell call. No script file or loader is needed.
+Retain supplied `HG_*` values. Use `pwd -P` for `cwd` and `HG_SCOPE_IDS` for `scopes`.
 Read [schema.md](references/schema.md) for scope, authority, time, and graph rules.
 
 ## Before acting

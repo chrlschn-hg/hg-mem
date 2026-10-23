@@ -3,19 +3,52 @@
 Requires extension-enabled SQLite CLI with FTS5 and GraphQLite 0.12.0 (tested
 SQLite 3.53.4; bootstrap trigger syntax requires SQLite 3.47 or newer). No Python,
 package install or executable helper ships with these skills. Install all sibling
-skill folders together. Keep plugin-provided environment values. Configure missing
-paths only during setup; never initialize the live DB as a smoke test.
+skill folders together. Keep plugin-provided environment values. Never initialize
+the live DB as a smoke test.
+
+## Start in Paseo
+
+The plugin supplies `HG_SKILLS`, `HG_DB`, `HG_SQLITE`, `HG_EXT`, `HG_OPERATOR`,
+`HG_AGENT`, and `HG_SCOPE_IDS`. Do not read Paseo settings with `jq`, export sample
+paths, or make up an agent ID. Run this check once per session:
 
 ```sh
-# zsh/bash session. Homebrew sqlite3 was tested; system macOS sqlite3 cannot .load.
-export HG_SKILLS="/absolute/path/to/skill"
-export HG_SQLITE=/opt/homebrew/opt/sqlite/bin/sqlite3
-export HG_DB="/absolute/path/to/memories.db"
-export HG_EXT="/absolute/path/to/graphqlite.dylib"
-# Keep HG_EXT free of quotes/newlines; it becomes a .load filename.
+(
+  if [ -n "${HG_MEMORY_ERROR:-}" ]; then
+    printf 'Memory unavailable: %s\n' "$HG_MEMORY_ERROR" >&2
+    exit 1
+  fi
+  for key in HG_SKILLS HG_DB HG_SQLITE HG_EXT HG_OPERATOR HG_SCOPE_IDS; do
+    if [ -z "$(printenv "$key")" ]; then
+      printf 'Memory unavailable: missing %s. Check Memory setup; start a new agent session or reload this agent in Paseo.\n' "$key" >&2
+      exit 1
+    fi
+  done
+  for key in HG_DB HG_SQLITE HG_EXT; do
+    if [ ! -f "$(printenv "$key")" ]; then
+      printf 'Memory unavailable: %s file is missing. Check Memory setup.\n' "$key" >&2
+      exit 1
+    fi
+  done
+  if [ ! -f "$HG_SKILLS/memory-workflow/SKILL.md" ]; then
+    printf 'Memory unavailable: skills are missing. Use Install / update in Memory setup.\n' >&2
+    exit 1
+  fi
+)
 ```
 
-Load these functions into the current shell. They do not change shell error modes.
+If it fails, stop memory operations and report it. Setup's Agent sessions section
+records launch delivery; it does not prove the provider passed values to shell tools.
+If delivery succeeded but the shell is missing values, check the provider's shell
+environment policy. A plugin reload or Memory's Refresh action cannot change an
+already-running process. Start a new agent session or use Paseo's agent reload.
+
+## Inline CLI helpers
+
+Read and define these two functions directly in the shell call that runs a recipe.
+No script file, `source`, code-extraction loader, `jq`, or new command is needed.
+Shell calls may be independent; repeat the definitions when needed. They do not
+change shell error modes. Keep `HG_EXT` free of double quotes/newlines for `.load`.
 `HG_OPERATOR` is the configured human identity; `HG_AGENT` is the session's supplied
 agent identity. If either is missing, report it; do not invent a human identity or
 reuse another agent's identity. Recall can run without `HG_AGENT`; own writes cannot.
@@ -58,6 +91,17 @@ Run `pwd -P`, then write its actual output as the JSON `cwd` value. Examples use
 `$HG_AGENT`, `$PWD`, and `$(pwd -P)` inside them do **not** expand. Replace sample
 values with actual values before running. Escape JSON quotes and backslashes;
 never switch to an unquoted heredoc for arbitrary memory text.
+
+`HG_SCOPE_IDS` is the supplied JSON array of project scopes. Preserve it in request
+`scopes`; do not silently replace project bindings with `[]`. Directory scope uses
+the real task directory (`pwd -P`). Print `printf '%s\n' "$HG_SCOPE_IDS"`, then copy
+that literal array into the quoted JSON request. Never put `$HG_SCOPE_IDS` literally
+inside the heredoc. If supplied scopes fail the eligibility guard, stop and report
+the binding/context problem; do not retry with `[]` or global scope to bypass it.
+Outside Paseo, explicit runtime configuration
+belongs to [memory-setup](../../memory-setup/SKILL.md), not automatic recovery.
+
+## Explicit runtime acquisition
 
 ```sh
 # Optional acquisition: macOS ARM64; select a matching release asset on other hosts.

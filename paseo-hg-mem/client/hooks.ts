@@ -8,6 +8,7 @@ import {
   memoryExplore,
   memoryInitialize,
   memoryInstallSkills,
+  memoryIntegrationStatus,
   memoryRead,
   memoryRetract,
   memorySave,
@@ -51,6 +52,14 @@ export function useMemoryStatus(hostId: string, enabled: boolean) {
     queryFn: () => status({}),
     enabled,
     retry: 1,
+  });
+}
+
+export function useMemoryIntegrationStatus(hostId: string, enabled: boolean) {
+  const integration = useRpc(memoryIntegrationStatus);
+  return useQuery({
+    queryKey: [MEMORY_KEY, hostId, "integration"],
+    queryFn: () => integration({}), enabled, refetchInterval: 5_000, retry: 1,
   });
 }
 

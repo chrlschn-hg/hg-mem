@@ -5,8 +5,9 @@ description: Retrieve memory before acting or answering what is remembered. Inve
 
 # Recall memory
 
-Load [runtime functions](../memory-workflow/references/runtime.md). Existing store
-only: `test -f "$HG_DB"`. Request values go in JSON, never interpolated into SQL.
+Check the session environment and define the two [inline runtime functions](../memory-workflow/references/runtime.md)
+in the shell call. No script file or `jq` settings lookup. Existing store only:
+`test -f "$HG_DB"`. Request values go in JSON, never interpolated into SQL.
 
 ```sh
 export HG_INPUT=$(mktemp)

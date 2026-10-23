@@ -54,6 +54,27 @@ the current skill assets and `HG_AGENT` environment. A saved system prompt from 
 older installation may still forbid automatic writes; start a newly configured
 agent rather than assuming a refresh rewrites that prompt.
 
+Session launch supplies `HG_DB`, `HG_SQLITE`, `HG_EXT`, `HG_SKILLS`, `HG_OPERATOR`,
+`HG_AGENT`, and `HG_SCOPE_IDS`. It checks configuration files and workspace context,
+without opening the database. A busy or unhealthy database therefore does not erase
+valid launch configuration. CLI recipes still validate the store before using it.
+
+Setup → Agent sessions shows recent interactive launch results and the last failure
+since plugin load. Diagnostics retain up to 50 agent/purpose entries; the screen
+shows five interactive entries. History opens do not replace the latest interactive
+result. Delivery to the provider is not proof that its shell sees the variables.
+
+| Symptom | Next step |
+| --- | --- |
+| Existing shell lacks `HG_*` | Start a new agent session or use Paseo's agent reload. Plugin reload and Memory's Refresh cannot alter an existing process. |
+| Launch delivered, shell still lacks values | Check the provider's shell environment policy. Do not parse Paseo settings or reconstruct identity. |
+| `HG_MEMORY_ERROR` set | Report it and fix Setup/context. Do not retry with empty/global scopes. |
+| Provider denies writes outside the workspace | Follow its permission flow. This plugin does not expand sandbox access. |
+
+Recall needs no script file: run the environment check, define the two inline CLI
+functions, then execute the recipe with a JSON request. No `source`, shell-code
+loader, `jq` settings lookup, or separate executable is needed.
+
 ## Verification
 
 - Skill installer: six disposable-directory tests passed (ownership, modified files, updates, aliases, stale lock). Real Setup action installed five skills in both discovery folders and archived 12 recognized old entries; repeat action was idempotent. Status verifies current file hashes. The database remained empty and ready.
@@ -61,4 +82,6 @@ agent rather than assuming a refresh rewrites that prompt.
 - Pure graph model: three tests passed; TypeScript passed.
 - Real Paseo UI, disposable store: observed agent claim reviewed; Keep memory cancelled; confirmed removal cleared results and retained the withdrawn detail and evidence.
 - Confirmation and result screenshots reviewed separately; failed-status-read UI branches were source-reviewed, not live fault-tested.
-- The configured home-folder store was not seeded for this test and remains empty.
+- Session environment checks: fresh Codex and Claude shells received all seven keys; native refresh and persistence resume also passed with the actual agent identity. Codex passed in login and non-login shells. Claude's tool has no separate login option.
+- Direct CLI forward test: disposable store only; preflight, directives, prefix search, and exact read passed using inline functions, without a script file or settings lookup.
+- No user-store fixtures or writes were used for these integration checks.
