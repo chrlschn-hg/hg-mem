@@ -11,7 +11,7 @@ import {
   SettingsSwitch,
 } from "@getpaseo/plugin/client/ui";
 import { memorySettings, type MemorySettings } from "../shared/settings";
-import { useHostState, useInitializeMemory, useMemoryCatalog, useMemoryStatus, useMemoryVerify } from "./hooks";
+import { useHostState, useInitializeMemory, useInstallMemorySkills, useMemoryCatalog, useMemoryStatus, useMemoryVerify } from "./hooks";
 import { errorMessage } from "./labels";
 
 export function MemorySetup({ host }: PluginSurfaceProps) {
@@ -21,6 +21,7 @@ export function MemorySetup({ host }: PluginSurfaceProps) {
   const health = status.data;
   const verify = useMemoryVerify();
   const initialize = useInitializeMemory(host.id);
+  const installSkills = useInstallMemorySkills(host.id);
   const catalog = useMemoryCatalog(host.id, online && health?.state === "ready");
 
   const saved = settings.status === "ready" ? settings.values : null;
@@ -123,11 +124,27 @@ export function MemorySetup({ host }: PluginSurfaceProps) {
             hint={
               health
                 ? health.skillsInstalled
-                  ? "Installed for agents on this host."
-                  : "Not installed. Agents cannot use the memory workflow until it is."
+                  ? "Current in this host's agent discovery folders."
+                  : "Install or update the skills for agents on this host."
                 : "Checking…"
             }
           />
+          <SettingsAction
+            label="Install or update memory skills"
+            hint="Publishes skills to the primary folder and agent discovery folders on this host. Archives recognized old copies. Modified current skills block installation; modified old copies are kept. Does not change memories. Save setup changes first."
+            actionLabel={installSkills.isPending ? "Installing…" : "Install / update"}
+            onPress={() => installSkills.mutate()}
+            disabled={!online || dirty || saved === null || installSkills.isPending || settings.saving || initialize.isPending}
+            error={installSkills.isError ? errorMessage(installSkills.error) : null}
+          />
+          {installSkills.data ? (
+            <>
+              <SettingsRow label="Last skill installation" hint={installSkills.data.message} />
+              {installSkills.data.directories.map(directory => <SettingsRow key={directory} label="Last installed in" hint={directory} />)}
+              {installSkills.data.migrated.length ? <SettingsRow label="Old skills archived" hint={`${installSkills.data.migrated.length} recognized copies moved to plugin backups.`} /> : null}
+              {installSkills.data.warnings.map(warning => <SettingsRow key={warning} label="Installation note" hint={warning} />)}
+            </>
+          ) : null}
           {verify.data ? (
             <SettingsRow
               label="Last check"
@@ -228,7 +245,7 @@ export function MemorySetup({ host }: PluginSurfaceProps) {
               />
               <SettingsInput
                 label="Skills folder"
-                hint="Where the memory skills are installed for agents. Blank uses the default."
+                hint="Primary skill files used by agent sessions. Install / update also publishes them to this host's agent discovery folders. Blank uses the default."
                 initialValue={draft.skillsDirectory}
                 onChangeText={(text) => patch({ skillsDirectory: text })}
                 disabled={!online}

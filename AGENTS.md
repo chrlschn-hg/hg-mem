@@ -5,6 +5,7 @@
 - Plugin source: `paseo-hg-mem/`. Keep its path stable for installed local plugins.
 - Canonical skills and SQL: `skill/`. Skills ship as Markdown only; shell/SQL examples live inside the text.
 - Generate embedded copies with `cd paseo-hg-mem && npm run generate`. Never edit `server/generated/recipes.ts` or `server/skill-assets.ts` directly.
+- Skill installation/migration belongs to the Setup action. Keep recognized legacy hashes in `tools/legacy-skill-sha256.json`; never infer ownership from names or replace modified skills. Use disposable homes for installer tests.
 - `tools/` and `tests/` are development inputs. `docs/` records decisions and evidence.
 - Local stores, downloads, caches, upstream checkouts, and experiments are ignored. Never commit them or run tests on a user store.
 
@@ -41,7 +42,13 @@ When filesystem or Git operations fail in the sandbox, ask the Build Assistant t
 
 ## Model and recall
 
-Read [schema](skill/hg-mem/references/schema.md) before changing graph semantics.
+Agent-written memories are the primary workflow. The enabled Paseo integration authorizes
+durable saves without per-memory approval. Attribute observations/inferences to
+`HG_AGENT`, keep them non-required, deduplicate, and use a justified scope. Honor
+opt-outs and human removals. A human can review records and withdraw them from
+recall; withdrawal retains evidence and never revives a predecessor.
+
+Read [schema](skill/memory-workflow/references/schema.md) before changing graph semantics.
 The graph is canonical; FTS is derived. Keep status, effective time, scope, purpose,
 subject, and authority distinct. Current eligibility belongs in the shared recipe,
 before LIMIT. Do not add an agent-maintained `current` flag or traverse scope hubs.

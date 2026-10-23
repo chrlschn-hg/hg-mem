@@ -1,7 +1,8 @@
 # Proposed memory editing
 
 Design only. The raw skills support presentation edits and replacement; the current
-plugin has create/retire RPCs, without an edit form or edit/replace RPC.
+plugin has create/retire/retract RPCs and a remove-from-recall action, without an
+edit form or edit/replace RPC.
 
 | Field | Suggested UI behavior |
 | --- | --- |

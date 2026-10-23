@@ -2,7 +2,7 @@ import { Fragment, useState, type ReactNode, type RefObject } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { attachmentText } from "../shared/snapshot";
 import { connectionsFor, filingCrumb, memoryExplorer, nodeExplorer, subjectNode } from "./explore";
-import { useMemoryRecord } from "./hooks";
+import { useMemoryRecord, useRetractMemory } from "./hooks";
 import {
   assertionLabel,
   errorMessage,
@@ -37,6 +37,8 @@ type MemoryDetailProps = {
   // Layout beside the Back controls in a single-pane inspector, and its choices directly under the top row when open.
   layoutTrigger?: ReactNode;
   layoutChoices?: ReactNode;
+  // Called once the memory is withdrawn, so the panel can drop it from the graph.
+  onRetracted(id: string): void;
 };
 
 export function MemoryDetail({
@@ -51,12 +53,62 @@ export function MemoryDetail({
   focusRef,
   layoutTrigger,
   layoutChoices,
+  onRetracted,
 }: MemoryDetailProps) {
   const { styles } = ui;
   const record = useMemoryRecord(ui.hostId, id);
   const scroll = useRestoredScroll(ui.scroll, `detail:${id}`);
   const [showDetails, setShowDetails] = useState(false);
   const [showAttachment, setShowAttachment] = useState(false);
+  const retract = useRetractMemory(ui.hostId);
+  // Removal state, local to this open detail. An error never proves the removal failed, so verifying and readFailed
+  // follow it, and the read decides the outcome.
+  const [confirming, setConfirming] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [readFailed, setReadFailed] = useState(false);
+  const [removedNow, setRemovedNow] = useState(false);
+  const removalOpen = confirming || retract.isError;
+
+  // Busy protection: one removal at a time, and nothing is sent while the memory is being read again.
+  function submitRemoval() {
+    if (retract.isPending || verifying) return;
+    setConfirming(true);
+    setReadFailed(false);
+    retract.mutate(id, {
+      onSuccess: () => {
+        setRemovedNow(true);
+        setConfirming(false);
+        onRetracted(id);
+      },
+      onError: () => void verifyAfterError(),
+    });
+  }
+
+  // Read the memory again, and let the read decide. Retraction is never sent again from here.
+  async function verifyAfterError() {
+    setVerifying(true);
+    const result = await record.refetch();
+    setVerifying(false);
+    if (result.isError || !result.data) {
+      setReadFailed(true);
+      return;
+    }
+    // A fresh read settles the question, so an earlier failed check no longer applies.
+    setReadFailed(false);
+    if (result.data.status === "retracted") {
+      retract.reset();
+      setRemovedNow(true);
+      setConfirming(false);
+      onRetracted(id);
+    }
+  }
+
+  // Closes the removal card without sending anything. After an unknown outcome, only a status read is a source of truth.
+  function closeRemoval() {
+    retract.reset();
+    setReadFailed(false);
+    setConfirming(false);
+  }
   const memory = record.data;
   // A single wide pane says Close. Anywhere with a pane below, the control names Results.
   const backToResults = backLabel === null && !narrow ? "Close" : resultsLabel;
@@ -68,7 +120,8 @@ export function MemoryDetail({
     </View>
   );
 
-  if (record.isError) {
+  // A failed refresh keeps the cached memory on screen, so an unknown removal still shows its Check status and Close actions.
+  if (record.isError && !memory) {
     return (
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         <View style={styles.detailTop}>{back}</View>
@@ -91,7 +144,13 @@ export function MemoryDetail({
   }
 
   const historical = historicalTag(memory);
-  const banner = historyBanner(memory);
+  // This reader's own removal reads in the removal's words. Later visits show the record's stored status.
+  const banner = removedNow
+    ? {
+        title: "Removed from recall",
+        body: "No longer appears in current search or Instructions. Its record and history stay in the store. Already attached copies are unchanged. Existing agent cached text cannot be recalled.",
+      }
+    : historyBanner(memory);
   const subject = memory.subject;
   const assertedBy = memory.assertedBy === ui.operatorId ? ui.operatorName : memory.assertedBy;
   // Explore connections opens on the filed-under node when there is one, else the operator (the Persona fallback).
@@ -127,6 +186,9 @@ export function MemoryDetail({
       )}
 
       {layoutChoices}
+      {record.isError && !removalOpen ? (
+        <Text style={styles.danger}>Could not refresh this memory. Showing the last loaded copy.</Text>
+      ) : null}
       {banner ? <Banner styles={styles} title={banner.title} body={banner.body} /> : null}
 
       <View style={styles.stack}>
@@ -145,7 +207,62 @@ export function MemoryDetail({
           label={showAttachment ? "Hide attachment text" : "Preview attachment text"}
           onPress={() => setShowAttachment((open) => !open)}
         />
+        {memory.status === "active" && !removalOpen ? (
+          <Action styles={styles} tone="link" label="Remove from recall" onPress={() => setConfirming(true)} />
+        ) : null}
       </View>
+
+      {memory.status === "active" && removalOpen ? (
+        <View style={styles.card}>
+          {verifying ? (
+            <Text style={styles.muted}>Checking the memory’s status…</Text>
+          ) : readFailed ? (
+            <>
+              <Text style={styles.danger}>Could not check the status. The removal may or may not have happened.</Text>
+              <View style={styles.actions}>
+                <Action styles={styles} tone="primary" label="Check status" onPress={() => void verifyAfterError()} />
+                <Action styles={styles} tone="link" label="Close" onPress={closeRemoval} />
+              </View>
+            </>
+          ) : retract.isError ? (
+            <>
+              <Text style={styles.danger}>Not removed. This memory is still active.</Text>
+              <Text style={styles.muted}>{errorMessage(retract.error)}</Text>
+              <View style={styles.actions}>
+                <Action styles={styles} tone="primary" label="Remove from recall" onPress={submitRemoval} />
+                <Action styles={styles} tone="link" label="Keep memory" onPress={closeRemoval} />
+              </View>
+            </>
+          ) : (
+            <>
+              <Text style={styles.sectionTitle}>Remove from recall?</Text>
+              <Text style={styles.text}>
+                After removal, this memory will no longer appear in current search or Instructions. Its record and history
+                stay in the store. Already attached copies are unchanged. Existing agent cached text cannot be recalled.
+              </Text>
+              <Text style={styles.muted}>
+                Asserted by {assertedBy} · {assertionLabel(memory.assertionKind)}
+              </Text>
+              <View style={styles.actions}>
+                <Action
+                  styles={styles}
+                  tone="primary"
+                  label={retract.isPending ? "Removing…" : "Remove from recall"}
+                  disabled={retract.isPending}
+                  onPress={submitRemoval}
+                />
+                <Action
+                  styles={styles}
+                  tone="link"
+                  label="Keep memory"
+                  disabled={retract.isPending}
+                  onPress={closeRemoval}
+                />
+              </View>
+            </>
+          )}
+        </View>
+      ) : null}
 
       {showAttachment ? (
         <Section styles={styles} title="Attachment text">

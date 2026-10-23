@@ -27,5 +27,8 @@ for (const [rel, text] of files) ts += `  ${JSON.stringify(rel)}: ${JSON.stringi
 ts += `};\n\n/** sha256 (hex) of each asset's UTF-8 bytes, for install verification. */\nexport const SKILL_ASSET_SHA256: Readonly<Record<string, string>> = {\n`;
 for (const [rel, text] of files) ts += `  ${JSON.stringify(rel)}: ${JSON.stringify(sha(text))},\n`;
 ts += `};\n`;
+// Frozen pre-normalization releases, including the reviewed 2026-10-23 host install.
+const legacy = JSON.parse(readFileSync(path.join(here, 'legacy-skill-sha256.json'), 'utf8'));
+ts += `\n/** Recognized legacy bytes only; never infer ownership from a folder name. */\nexport const LEGACY_SKILL_SHA256: Readonly<Record<string, readonly string[]>> = ${JSON.stringify(legacy, null, 2)};\n`;
 writeFileSync(out, ts);
 console.log(`wrote ${out}: ${files.length} assets, ${ts.length} chars`);

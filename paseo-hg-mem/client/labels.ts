@@ -80,7 +80,7 @@ export function statusLabel(status: MemoryRecord["status"]): string {
     case "retired":
       return "No longer active";
     case "retracted":
-      return "Withdrawn as mistaken";
+      return "Withdrawn";
   }
 }
 
@@ -91,7 +91,7 @@ type Timed = Pick<MemoryRecord, "status" | "validity" | "validFrom" | "validTo">
 // Display only. Status and dates say what is in effect in time, never whether it applies in a given scope.
 export function timeState(item: Timed, now = Date.now()): { kind: TimeKind; label: string } {
   if (item.status === "retracted" || item.validity === "RETRACTED") {
-    return { kind: "withdrawn", label: "Withdrawn as mistaken" };
+    return { kind: "withdrawn", label: "Withdrawn" };
   }
   if (item.status === "retired" || (item.validTo !== null && Date.parse(item.validTo) <= now)) {
     return {

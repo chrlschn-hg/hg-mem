@@ -12,11 +12,11 @@ Current search already excludes ended versions through a shared status/time/scop
 - Explicit `at` queries include historically valid retired records and exclude retracted assertions. Revision evidence is a different route that can show retracted records. Neither reconstructs what was believed at a historical recording time.
 - Retraction never reopens a predecessor. A new sourced memory is the reinstatement path. Future and partial replacements remain rejected; no successor-edge shortcut should silently introduce different semantics.
 
-These guarantees come from [eligibility](../skill/hg-mem/references/eligible.md), [search](../skill/hg-mem-recall/references/search.md), [replacement](../skill/hg-mem-write/references/replace-link.md), and the [lifecycle contract](../skill/hg-mem/references/schema.md).
+These guarantees come from [eligibility](../skill/memory-workflow/references/eligible.md), [search](../skill/memory-recall/references/search.md), [replacement](../skill/memory-write/references/replace-link.md), and the [lifecycle contract](../skill/memory-workflow/references/schema.md).
 
 ## Where history still costs work
 
-The [commit recipe](../skill/hg-mem-write/references/commit.md) deletes and rebuilds all FTS rows from all `hg_memory` records after full graph validation. More history therefore increases the amount of content processed by each rebuild. A current-result filter does not change this write path.
+The [commit recipe](../skill/memory-write/references/commit.md) deletes and rebuilds all FTS rows from all `hg_memory` records after full graph validation. More history therefore increases the amount of content processed by each rebuild. A current-result filter does not change this write path.
 
 FTS contains all historical terms. Eligibility before LIMIT guarantees membership, not a particular physical join order or a bounded number of posting candidates. Existing E9 SQL plans show an FTS scan followed by indexed scope checks and an ordering temporary B-tree. They are prototype plans, not plans for the current recipes. The current `hg_node` view pivots typed EAV properties with aggregation; its work and possible materialization must also be measured. A small FTS index alone does not prove the rest of a query avoids history.
 
@@ -56,7 +56,7 @@ First compare existing direct typed-EAV SQL and the aggregate view for the same 
 
 ## History does not require a growing chain of SQL joins
 
-Historical text search and as-of validity queries filter stored records directly; they need no `SUPERSEDES` traversal. Lineage exploration is separate. The current [explore recipe](../skill/hg-mem-recall/references/explore.md) uses two recursive CTEs, each capped inside recursion at three steps. On a valid nonbranching revision graph that means at most six neighboring revisions. Each step uses one directional adjacency join; the SQL text does not acquire another self-join for every stored version.
+Historical text search and as-of validity queries filter stored records directly; they need no `SUPERSEDES` traversal. Lineage exploration is separate. The current [explore recipe](../skill/memory-recall/references/explore.md) uses two recursive CTEs, each capped inside recursion at three steps. On a valid nonbranching revision graph that means at most six neighboring revisions. Each step uses one directional adjacency join; the SQL text does not acquire another self-join for every stored version.
 
 The source has indexes supporting both adjacency directions, but each recursive step also joins `hg_node`. Six returned neighbors is therefore not proof of six underlying EAV rows read. No current explore execution plan was captured in this review. An unbounded chain would require work proportional to the number of traversed edges, plus property retrieval; accumulating the complete `via` path at every depth can also create quadratic total path text. A future full-history browser should bound recursion/work and continue from a frontier, rather than relying on a final LIMIT after producing all history. No family node is justified solely to avoid an imagined ever-longer generated SQL statement.
 
@@ -77,7 +77,7 @@ Decision: predeclare budgets for the actual CLI workflow and judged live-query r
 - [Pinned schema indexes](../source/graphqlite/docs/src/content/docs/reference/database-schema.md) and [index executor source](../source/graphqlite/src/backend/executor/executor_schema_objects.c).
 - [GraphQLite EXPLAIN and PROFILE](../source/graphqlite/docs/src/content/docs/reference/cypher-clauses.md).
 - [Existing E9 plan artifact](../discovery/runtime/results/e9_plans/direct_10000_base.json), [runtime report and limits](../discovery/runtime/REPORT.md), and [previous provisional budget rules](../discovery/runtime/results/e9_budgets.json).
-- [Canonical EAV aggregate views and validation](../skill/hg-mem-init/references/bootstrap.md).
+- [Canonical EAV aggregate views and validation](../skill/memory-setup/references/bootstrap.md).
 - [FTS5 BM25 statistics](https://sqlite.org/fts5.html#the_bm25_function).
 
 DMTS challenge exchange resolved: active-only FTS would retain replaced versions; successor retraction deliberately does not restore the predecessor. Both reviewers agree to keep interval eligibility authoritative and require measurements before another projection.

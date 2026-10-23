@@ -293,6 +293,18 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
     }
   }
 
+  // A withdrawn memory is no longer current. Drop it from the graph: clear its selection, and drop any expansion that listed
+  // it, so the next expand reads the store again. The query, the page, and the open detail stay as they were.
+  function clearRetracted(id: string) {
+    setGraph((current) => ({
+      ...current,
+      selectedId: current.selectedId === id ? null : current.selectedId,
+      expansions: Object.fromEntries(
+        Object.entries(current.expansions).filter(([, entry]) => !entry.items.some((item) => item.id === id)),
+      ),
+    }));
+  }
+
   // A Layout choice from either surface. The announcement and the return of focus go with it.
   function chooseLayout(split: boolean) {
     setSplitGraph(split);
@@ -604,6 +616,7 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
         ui={ui}
         id={top.id}
         narrow={singlePane}
+        onRetracted={clearRetracted}
         focusRef={inspectorControl}
         layoutTrigger={layoutTrigger}
         layoutChoices={layoutChoices}

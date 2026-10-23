@@ -21,6 +21,7 @@
     "test": "node --import tsx --test server/*.test.ts",
     "generate:recipes": "node --import tsx server/tools/generate-recipes.ts",
     "generate:skills": "node ../tools/generate-assets.mjs",
+    "check:skills": "node ../tools/check-skills.mjs",
     "generate": "npm run generate:recipes && npm run generate:skills",
     "test:graph": "node --import tsx --test ../tests/graph-model.test.mts"
   },

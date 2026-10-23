@@ -12,18 +12,19 @@ const outFile = join(here, '..', 'generated', 'recipes.ts');
 
 // Recipe name -> raw skill Markdown file. Every name must resolve to exactly one file.
 export const RECIPE_FILES = {
-  bootstrap: 'hg-mem-init/references/bootstrap.md',
-  eligible: 'hg-mem/references/eligible.md',
-  begin: 'hg-mem-write/references/begin.md',
-  context: 'hg-mem-write/references/context.md',
-  create: 'hg-mem-write/references/create.md',
-  retire: 'hg-mem-write/references/retire.md',
-  commit: 'hg-mem-write/references/commit.md',
-  search: 'hg-mem-recall/references/search.md',
-  directives: 'hg-mem-recall/references/directives.md',
-  navigate: 'hg-mem-recall/references/navigate.md',
-  explore: 'hg-mem-recall/references/explore.md',
-  verify: 'hg-mem-maintain/references/verify.md',
+  bootstrap: 'memory-setup/references/bootstrap.md',
+  eligible: 'memory-workflow/references/eligible.md',
+  begin: 'memory-write/references/begin.md',
+  context: 'memory-write/references/context.md',
+  create: 'memory-write/references/create.md',
+  retire: 'memory-write/references/retire.md',
+  retract: 'memory-write/references/retract.md',
+  commit: 'memory-write/references/commit.md',
+  search: 'memory-recall/references/search.md',
+  directives: 'memory-recall/references/directives.md',
+  navigate: 'memory-recall/references/navigate.md',
+  explore: 'memory-recall/references/explore.md',
+  verify: 'memory-maintain/references/verify.md',
 } as const;
 export type RecipeName = keyof typeof RECIPE_FILES;
 
@@ -34,7 +35,7 @@ function walk(dir: string): string[] {
   });
 }
 
-// Same extraction rule as hgblock in skill/hg-mem/references/runtime.md: every ```sql fence, in order.
+// Same extraction rule as hgblock in skill/memory-workflow/references/runtime.md: every ```sql fence, in order.
 export function extractSql(markdown: string): string {
   const blocks: string[] = [];
   let inside = false;

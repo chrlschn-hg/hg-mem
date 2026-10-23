@@ -1,9 +1,9 @@
 # hg-mem skill bundle
 
 ```sh
-# Install the hg-mem* sibling folders from skill/ together; Markdown files only.
-# paseo-memory is the optional Paseo entry point and routes to those raw skills.
-# Start with hg-mem; use hg-mem-init for a new managed database.
+# Install the five memory-* sibling folders from skill/ together; Markdown files only.
+# Start with memory-workflow; it recalls before a task and captures durable learning.
+# memory-setup is for an explicit new-store setup request.
 # Existing unmanaged databases require an explicit migration, not initialization.
 ```
 
@@ -11,8 +11,8 @@
 
 - Source distribution: copy the Markdown folders from `skill/`; release ZIPs are build output.
 - [Release verification and limitations](docs/archive/skill-release-v1.md)
-- [Root workflow](skill/hg-mem/SKILL.md)
-- [Initialize the runtime and database](skill/hg-mem-init/SKILL.md)
-- [Create and revise memories](skill/hg-mem-write/SKILL.md)
-- [Retrieve and navigate memories](skill/hg-mem-recall/SKILL.md)
-- [Inspect, verify and rebuild search](skill/hg-mem-maintain/SKILL.md)
+- [Root workflow](skill/memory-workflow/SKILL.md)
+- [Initialize the runtime and database](skill/memory-setup/SKILL.md)
+- [Create and revise memories](skill/memory-write/SKILL.md)
+- [Retrieve and navigate memories](skill/memory-recall/SKILL.md)
+- [Inspect, verify and rebuild search](skill/memory-maintain/SKILL.md)

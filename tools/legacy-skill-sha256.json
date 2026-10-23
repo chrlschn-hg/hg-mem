@@ -1,0 +1,89 @@
+{
+  "hg-mem-init/SKILL.md": [
+    "f33eb8b48600648061a1edb05b754dcbbbafad2e719da7878d6091330bd7d903"
+  ],
+  "hg-mem-init/references/bootstrap.md": [
+    "4a49bd18524ad6f95f93bdacb444312c7e894413bc8915c3a250c38b7d10081a"
+  ],
+  "hg-mem-maintain/SKILL.md": [
+    "7805c5fbebbffb6110e622b8955b0836832ea7aac38743c5053ad1eaf0820a8b"
+  ],
+  "hg-mem-maintain/references/inspect.md": [
+    "3ee73ce008ae39cffaddc9c08abb3e2754a7eca1ed11adb8902fd9e80acb37db"
+  ],
+  "hg-mem-maintain/references/rebuild.md": [
+    "f12db7eab8a296027c7047869676f93e4ee526e058f95eaea7b9396d210c2f54"
+  ],
+  "hg-mem-maintain/references/verify.md": [
+    "ec2d39afcd1cbf03d1910995b46f3d2c3dc35b44eb246a74131663c20c783d8e"
+  ],
+  "hg-mem-recall/SKILL.md": [
+    "1197eb99f32ba5a60a23079c09a499b6ff5fdec364e99c8a62b2c56282f95a89"
+  ],
+  "hg-mem-recall/references/cypher.md": [
+    "1bd3fd8a351fb15b1a1a7ed6af6cae033454d42282ba0677bea544f4e4cfb46b"
+  ],
+  "hg-mem-recall/references/directives.md": [
+    "1a6b272c142d3bd5bd0bb93d44c53d993a3ca9a03c59762ba8728910284cb2c3"
+  ],
+  "hg-mem-recall/references/explore.md": [
+    "1c74bbbb81ed9fcc0499eabc3de28af1b16c7efc2c1e57538b321cec38eb4187"
+  ],
+  "hg-mem-recall/references/navigate.md": [
+    "6c34b1cec4c495b6ee8284a8ae484995d0e6a1a7039dc5b631198a34eece2327"
+  ],
+  "hg-mem-recall/references/read.md": [
+    "aa5fa547b9e638105adb1ca8d7c97eabdf4c94b4a9cab8e19c46d9b0c960e3bb"
+  ],
+  "hg-mem-recall/references/search.md": [
+    "bd0d09613c0f0cdabc1a245b1c07f74316556378aa4aa9c7c66f5be7f00b76b2"
+  ],
+  "hg-mem-write/SKILL.md": [
+    "85c85b0489a112076a0993131ca2fc8297f004afdd1cf3b42523f39e373db40a",
+    "eca90dd06fca44d27a5759d3a10df09d12516d4b799eb7e58de159a2b2244009"
+  ],
+  "hg-mem-write/references/begin.md": [
+    "4a9068f60270335facdf0017f1359ba5fb94f82d054bb95462c493b733c67197"
+  ],
+  "hg-mem-write/references/commit.md": [
+    "a8938b4d303b77d791e81e0912394d9aa0b641e4ba823c485705afd09747d8af"
+  ],
+  "hg-mem-write/references/context.md": [
+    "287e446445dc9f0f8e4e2355126cab6fc104cef2618fe3eb92954a8a0275b9b7"
+  ],
+  "hg-mem-write/references/create.md": [
+    "01658ab1a3777f92a9abb384f4a2352b2de400d7d56b6e5baa8027694c65096c"
+  ],
+  "hg-mem-write/references/edit.md": [
+    "a4ab3c104fc2c98f217feff2d4cbfb43be3bb186c39d25327e13371a25eee712"
+  ],
+  "hg-mem-write/references/replace-link.md": [
+    "d3ad4f6da10e94539ab5023661aa1cf686dbd3036ba55921c337f7deb15b2a1e"
+  ],
+  "hg-mem-write/references/replace-start.md": [
+    "057a3b0a234639438ea2dbe66a3979b9ffe53199afa5bd2829a7d4fcfdf23d69"
+  ],
+  "hg-mem-write/references/retire.md": [
+    "1c337a648b1252eee86ab969dffc51b8af14c232d0671965303e80c7e4400715"
+  ],
+  "hg-mem-write/references/retract.md": [
+    "7b5694927f59531a83ec527b4cac11576510e924ed62b34004066156d96ffaa2"
+  ],
+  "hg-mem/SKILL.md": [
+    "823e75a04ea4d27e04785108861ce1ec1e34a5091f2bc0c3045ac5046b6056a7",
+    "f7faeb046c137355b7b3d712987b6272e6798029921212cf77f501fd91a55244"
+  ],
+  "hg-mem/references/eligible.md": [
+    "8f693c2bad617be6d27eb2684f01bd897ed1ea6a8422dd094271e506b4c7e1b0"
+  ],
+  "hg-mem/references/runtime.md": [
+    "2ba1be8d0cae1b8b124063653f5bef9e20584ca38a445fcc345153e26721ba5e"
+  ],
+  "hg-mem/references/schema.md": [
+    "e053e0e2b2382f393aba04bf03d8780d06fb9f7b68fe661f55a9220ccddae598"
+  ],
+  "paseo-memory/SKILL.md": [
+    "66f1cd7166e4933900f0fff407429c5ab51d3f752bb20793af30683f5463d7e9",
+    "35e0f7ba56e84de32bf73a00bae98d4c56cb5cff1609c4de0811c8aeac36ed9b"
+  ]
+}

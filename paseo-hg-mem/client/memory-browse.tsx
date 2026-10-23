@@ -60,8 +60,8 @@ export function MemoryBrowse({
     ) : (
       <StateBlock
         styles={styles}
-        title="No memories for this directory yet"
-        body="Nothing is saved until you press Save in New memory."
+        title="No memories available for current recall"
+        body="Agents can save useful context as you work. You can also add a memory here."
       >
         <Action styles={styles} tone="primary" label="New memory" onPress={onNew} />
       </StateBlock>

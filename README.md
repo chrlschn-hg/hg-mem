@@ -4,8 +4,15 @@ Local, persistent memory for agents and people in Paseo. Save preferences, proje
 knowledge, and instructions. Search them, inspect their sources, and explore their
 connections in a graph.
 
+Agents are the primary writers: useful durable observations can be saved without
+per-memory approval. People review attribution, sources, scope, and content, and
+can remove unwanted memories from recall. Removal retains the evidence in history.
+
 The database stays on the daemon host. The UI and agent skills use the same SQLite
 CLI and GraphQLite recipes. No Python runtime or separate MCP server is required.
+
+Agent skills: start with `memory-workflow`; it routes to `memory-recall`,
+`memory-write`, `memory-setup`, and `memory-maintain`. All five ship together as text.
 
 ## Install and run
 
@@ -24,6 +31,9 @@ paseo --host 127.0.0.1:6767 plugin ls
 Open **Settings → Plugins → Memory setup**. Set the operator name and ID, database
 path, SQLite CLI path, and GraphQLite extension path. Save setup, then explicitly
 create/connect the store. Initialization refuses unmanaged databases.
+Choose **Install or update memory skills** to publish the five `memory-*` skills
+for agents on this host. Recognized old skills are archived; modified copies are
+preserved and reported. Open a new agent session afterward. No daemon restart.
 
 Download the extension from the [official release](https://github.com/colliery-io/graphqlite/releases/tag/v0.12.0).
 The required asset is `graphqlite-macos-arm64.dylib`; SHA-256:
@@ -88,7 +98,7 @@ There is no standalone web dev server. Run the plugin in Paseo and reload it aft
 changes. Do not restart the daemon for ordinary plugin work.
 
 Agent CLI example, after loading the session functions from
-[runtime.md](skill/hg-mem/references/runtime.md) and receiving `HG_*` settings:
+[runtime.md](skill/memory-workflow/references/runtime.md) and receiving `HG_*` settings:
 
 ```sh
 export HG_INPUT=$(mktemp)
@@ -96,12 +106,12 @@ export HG_INPUT=$(mktemp)
 cat > "$HG_INPUT" <<'JSON'
 {"cwd":"/absolute/workspace","scopes":[],"query":"arch","limit":20,"offset":0}
 JSON
-{ hgblock hg-mem/references/eligible.md; hgblock hg-mem-recall/references/search.md; } | hgsql
+{ hgblock memory-workflow/references/eligible.md; hgblock memory-recall/references/search.md; } | hgsql
 rm -f "$HG_INPUT"
 ```
 
 Always run the independent directive inventory before acting; lexical search is
-not that inventory. See [recall](skill/hg-mem-recall/SKILL.md) for directives,
+not that inventory. See [recall](skill/memory-recall/SKILL.md) for directives,
 search, exact reads, bounded exploration, and parameterized Cypher examples.
 
 ## Source map and limits
@@ -117,7 +127,7 @@ search, exact reads, bounded exploration, and parameterized Cypher examples.
 The graph is web/desktop only, bounded to 120 loaded nodes. Native clients use
 list/path browsing. Renderer errors have a local fallback; browser/GPU crashes
 and arbitrary async failures are outside that boundary. Fonts may use external
-services. UI editing/removal is not implemented. Full validation and FTS rebuilding
+services. UI content editing is not implemented. Full validation and FTS rebuilding
 on writes currently suit small stores.
 
 See [working guide](AGENTS.md), [lessons](docs/lessons.md), and

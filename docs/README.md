@@ -4,10 +4,11 @@ Start with [README](../README.md), [AGENTS](../AGENTS.md), and [lessons](lessons
 
 ## Current contracts
 
-- [Schema](../skill/hg-mem/references/schema.md): graph, authority, time, replacement rules.
-- [Runtime](../skill/hg-mem/references/runtime.md): CLI session functions.
-- [Recall](../skill/hg-mem-recall/SKILL.md), [write](../skill/hg-mem-write/SKILL.md), [maintenance](../skill/hg-mem-maintain/SKILL.md).
+- [Schema](../skill/memory-workflow/references/schema.md): graph, authority, time, replacement rules.
+- [Runtime](../skill/memory-workflow/references/runtime.md): CLI session functions.
+- [Recall](../skill/memory-recall/SKILL.md), [write](../skill/memory-write/SKILL.md), [maintenance](../skill/memory-maintain/SKILL.md).
 - [Memory exploration](memory-exploration.md), [graph UI](memory-graph.md).
+- [Agent-first writing and human review](agent-memory.md).
 - [Version-search review](version-search-review.md): physical growth and ranking concerns.
 - [Editing design](memory-editing-design.md): proposal; UI editing is not shipped.
 

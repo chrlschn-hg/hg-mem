@@ -7,7 +7,9 @@ import {
   memoryDirectives,
   memoryExplore,
   memoryInitialize,
+  memoryInstallSkills,
   memoryRead,
+  memoryRetract,
   memorySave,
   memoryStatus,
   memoryVerify,
@@ -116,12 +118,41 @@ export function useSaveMemory(hostId: string, context: MemoryContext) {
   });
 }
 
+// Withdraws a memory from recall. The record and its history stay in the store. The returned record shows at once in the
+// detail, and every memory view that can list, link, or inject the memory refetches. The mutation itself never retries.
+export function useRetractMemory(hostId: string) {
+  const retract = useRpc(memoryRetract);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => retract({ id }),
+    retry: false,
+    onSuccess: (record) => {
+      queryClient.setQueryData([MEMORY_KEY, hostId, "read", record.id], record);
+      void queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, hostId, "read"] });
+      void queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, hostId, "browse"] });
+      void queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, hostId, "directives"] });
+      void queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, hostId, "explore"] });
+      void queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, hostId, "graph"] });
+      void queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, hostId, "catalog"] });
+    },
+  });
+}
+
 export function useInitializeMemory(hostId: string) {
   const initialize = useRpc(memoryInitialize);
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => initialize({}),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, hostId] }),
+  });
+}
+
+export function useInstallMemorySkills(hostId: string) {
+  const install = useRpc(memoryInstallSkills);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => install({}), retry: false,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [MEMORY_KEY, hostId, "status"] }),
   });
 }
 

@@ -61,6 +61,10 @@ export const HealthSchema = z.object({
 });
 export type MemoryHealth = z.infer<typeof HealthSchema>;
 export const memoryStatus = defineRpc({ name: 'memory.status', input: z.object({}), output: HealthSchema });
+export const memoryInstallSkills = defineRpc({
+  name: 'memory.install_skills', input: z.object({}),
+  output: z.object({ message: z.string(), directories: z.array(z.string()), migrated: z.array(z.string()), warnings: z.array(z.string()) }),
+});
 export const memoryInitialize = defineRpc({
   name: 'memory.initialize', input: z.object({ context: MemoryContextSchema.optional() }), output: HealthSchema,
 });
@@ -85,6 +89,9 @@ export const memorySave = defineRpc({
 });
 export const memoryRetire = defineRpc({
   name: 'memory.retire', input: z.object({ id: z.string().min(1) }), output: MemoryRecordSchema,
+});
+export const memoryRetract = defineRpc({
+  name: 'memory.retract', input: z.object({ id: z.string().min(1) }), output: MemoryRecordSchema,
 });
 export const memoryVerify = defineRpc({
   name: 'memory.verify', input: z.object({}), output: z.object({ ok: z.boolean(), message: z.string() }),

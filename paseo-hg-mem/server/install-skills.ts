@@ -4,7 +4,7 @@ import { homedir } from "node:os";
 import path from "node:path";
 import { SKILL_ASSETS } from "./skill-assets";
 
-const ROOT_SKILL = "paseo-memory/SKILL.md";
+const ROOT_SKILL = "memory-workflow/SKILL.md";
 
 /** Absolute path of the Paseo-facing root skill inside an install directory. */
 export function rootSkillPath(directory: string): string {

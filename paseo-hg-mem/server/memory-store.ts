@@ -35,7 +35,7 @@ export class MemoryStore {
       suggestedSqlitePath: suggestedSqlitePath(),
       suggestedExtensionPath: suggestedExtensionPath(),
     };
-    const skillsInstalled = this.settings.skillsDirectory !== '' && existsSync(`${this.settings.skillsDirectory}/hg-mem/SKILL.md`);
+    const skillsInstalled = this.settings.skillsDirectory !== '' && existsSync(`${this.settings.skillsDirectory}/memory-workflow/SKILL.md`);
     const base = { settings: this.settings, ...suggestions, skillsInstalled };
     const setup = (message: string, memoryCount = 0): MemoryHealth => HealthSchema.parse({ ...base, state: 'setup', message, memoryCount });
     const error = (message: string): MemoryHealth => HealthSchema.parse({ ...base, state: 'error', message, memoryCount: 0 });
@@ -180,6 +180,23 @@ export class MemoryStore {
     } catch (cause) {
       if (cause instanceof MemoryError && cause.code === 'invalid_request' && CHECK_FAILURE.test(cause.message)) {
         throw new MemoryError('invalid_request', 'The memory cannot be retired yet: it is not active now, or it started in the current second. Retry in a moment.');
+      }
+      throw cause;
+    }
+  }
+
+  // Withdraw a mistaken or unwanted assertion from recall. The record and its evidence stay readable;
+  // no predecessor is revived and nothing is deleted. Retracting an already retracted memory is rejected.
+  async retract(id: string): Promise<MemoryRecord> {
+    await this.requireReady();
+    await this.recordOrThrow(id);
+    const sql = [RECIPE_SQL.begin, RECIPE_SQL.retract, RECIPE_SQL.commit].join('\n');
+    try {
+      const { stdout } = await this.call({ p: { id }, sql, final: q.READ_RECORD, write: true });
+      return this.unwrapRecord(stdout, id);
+    } catch (cause) {
+      if (cause instanceof MemoryError && cause.code === 'invalid_request' && CHECK_FAILURE.test(cause.message)) {
+        throw new MemoryError('invalid_request', 'The memory was already removed from recall, so nothing changed.');
       }
       throw cause;
     }

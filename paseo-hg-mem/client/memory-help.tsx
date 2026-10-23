@@ -24,6 +24,20 @@ export function MemoryHelp({ ui }: { ui: PanelUi }) {
         </Text>
       </Section>
 
+      <Section styles={styles} title="Who saves and reviews memories">
+        <Text style={styles.text}>Agents save useful, durable memories automatically. They do not ask first.</Text>
+        <Text style={styles.text}>
+          Agent observations and inferences are marked Observed or Inferred and are not Required. Required is reserved
+          for an explicit instruction from a person.
+        </Text>
+        <Text style={styles.text}>
+          People can review any memory here. To remove one from current search and Instructions, choose Remove from
+          recall. Its record and history stay in the store. Already attached copies are unchanged. Existing agent cached
+          text cannot be recalled.
+        </Text>
+        <Text style={styles.muted}>Each memory shows who asserted it and how, so a reviewer can judge it.</Text>
+      </Section>
+
       <Section styles={styles} title="When a memory applies">
         <Text style={styles.text}>
           Each memory says where it applies, such as this directory or everywhere on this host. It can also have a start or end time.
