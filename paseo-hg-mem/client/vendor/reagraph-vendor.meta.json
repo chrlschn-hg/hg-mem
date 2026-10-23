@@ -1,0 +1,15 @@
+{
+  "artifact": "reagraph-vendor.js",
+  "sha1": "f704958d4e1a4e5622975d9b06fd810032c4680f",
+  "reagraph": "4.32.0",
+  "@react-three/fiber": "9.8.2",
+  "@react-three/drei": "10.7.9",
+  "three": "0.184.0",
+  "graphology": "0.26.0",
+  "react-dom (private, inlined)": "19.1.0",
+  "requiresHostReact": "19.1.0",
+  "externals": ["react", "react/jsx-runtime"],
+  "bundler": "esbuild 0.25.12",
+  "builtAt": "2026-10-23",
+  "networkNote": "Label text uses troika-three-text. Without labelFontUrl it fetches glyph data from a CDN (Google Fonts / cdn.jsdelivr.net unicode-font-resolver), from a worker. The graph is not fully offline."
+}

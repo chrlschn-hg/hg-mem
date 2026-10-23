@@ -1,0 +1,6 @@
+# Preserve tested vendor bytes and notices, including embedded shader whitespace.
+paseo-hg-mem/client/vendor/reagraph-vendor.js linguist-vendored -whitespace
+paseo-hg-mem/client/vendor/reagraph-vendor.js.LEGAL.txt linguist-vendored -whitespace
+paseo-hg-mem/server/skill-assets.ts linguist-generated
+paseo-hg-mem/server/generated/recipes.ts linguist-generated
+*.png binary

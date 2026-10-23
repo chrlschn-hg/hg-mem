@@ -1,0 +1,36 @@
+# Dependencies and local runtime state
+node_modules/
+.cache/
+.local/
+.DS_Store
+*.log
+*.tsbuildinfo
+coverage/
+*.tgz
+*.zip
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.dylib
+*.so
+*.dll
+
+# Credentials and machine configuration
+.env
+.env.*
+*.pem
+
+# Research sandboxes, downloaded references and upstream checkouts.
+# Durable findings are indexed in docs/; production dependencies live in the plugin.
+/discovery/
+/research/
+/source/
+/bin/
+/data/
+/dist/
+/graphqlite/
+/references/
+/upstream/
+/vendor/

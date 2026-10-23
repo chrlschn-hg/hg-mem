@@ -1,0 +1,8 @@
+{
+  "id": "hg-mem",
+  "name": "Memory",
+  "media": [],
+  "requirements": {
+    "paseo": ">=0.12.0 <0.13.0"
+  }
+}

@@ -1,0 +1,13 @@
+Memory keeps personal preferences, project notes and corrective instructions in a local graph database. Open the Memory workspace panel to search, read and save memories. The Instructions view lists required instructions independently of search, with paging and uncertain applicability visible.
+
+Inside Memories, switch between List and Graph. The web and desktop graph shows the current result page and its filing, subject and revision links. Select a node to review it, or expand a filing or subject node to load more connections. Moving nodes changes the view only. The graph has a 120-node limit and a selectable node list. If the renderer fails, retry it or continue in List. Native clients retain list-based browsing. Graph labels may load font data from external font services.
+
+Choose an operator, a database location, an extension-enabled SQLite CLI and GraphQLite in Memory setup. This first iteration targets Paseo 0.12 on macOS Apple Silicon, Homebrew SQLite and the official GraphQLite 0.12.0 library. Setup creates a new managed store or checks an existing managed store.
+
+Saves use explicit directory or global scope. A directory applies to that directory and its descendants; a separate worktree needs its own scope or an explicit project binding. Purpose and Required instruction are separate choices.
+
+Agents receive a short pointer to bundled Markdown skills and local runtime paths. They use the same SQLite CLI recipes as the interface. This does not guarantee an agent has read or followed an instruction. Existing agents need a session refresh for environment changes and a one-time instruction to read the installed skill; the automatic prompt pointer applies to newly created agents.
+
+Composer attachments contain memory snapshots, including scope, status and source locator. Preview the text in Memory before attaching. Selecting an attachment stages context; it does not send a message. Paseo 0.12 attachment chips cannot reopen local memories. An already-staged snapshot keeps its original text; remove and add it again after a memory changes. Document summaries aid discovery; source locators are not verified evidence.
+
+The database and installed skills stay outside the plugin source and survive plugin removal. Conversations are not ingested automatically. Full validation and search rebuilding on saves suit small stores; large-store optimization and replacement editing are outside this first iteration.
