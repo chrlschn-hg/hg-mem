@@ -27,6 +27,8 @@ UI checks; use a separate tab and preserve the operator's tab/settings. Coordina
 shared file edits. For material layout changes, ask designer and operator advocate
 for bounded screenshot review.
 
+When filesystem or Git operations fail in the sandbox, ask the Build Assistant to perform the authorized operation; report the result rather than retrying permission workarounds.
+
 ## Stack and persistence
 
 - Paseo SDK/client 0.12.0, React 19.1.0, React Native 0.81.5, TypeScript, Zod.
