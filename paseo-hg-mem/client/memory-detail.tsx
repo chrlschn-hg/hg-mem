@@ -207,62 +207,7 @@ export function MemoryDetail({
           label={showAttachment ? "Hide attachment text" : "Preview attachment text"}
           onPress={() => setShowAttachment((open) => !open)}
         />
-        {memory.status === "active" && !removalOpen ? (
-          <Action styles={styles} tone="link" label="Remove from recall" onPress={() => setConfirming(true)} />
-        ) : null}
       </View>
-
-      {memory.status === "active" && removalOpen ? (
-        <View style={styles.card}>
-          {verifying ? (
-            <Text style={styles.muted}>Checking the memory’s status…</Text>
-          ) : readFailed ? (
-            <>
-              <Text style={styles.danger}>Could not check the status. The removal may or may not have happened.</Text>
-              <View style={styles.actions}>
-                <Action styles={styles} tone="primary" label="Check status" onPress={() => void verifyAfterError()} />
-                <Action styles={styles} tone="link" label="Close" onPress={closeRemoval} />
-              </View>
-            </>
-          ) : retract.isError ? (
-            <>
-              <Text style={styles.danger}>Not removed. This memory is still active.</Text>
-              <Text style={styles.muted}>{errorMessage(retract.error)}</Text>
-              <View style={styles.actions}>
-                <Action styles={styles} tone="primary" label="Remove from recall" onPress={submitRemoval} />
-                <Action styles={styles} tone="link" label="Keep memory" onPress={closeRemoval} />
-              </View>
-            </>
-          ) : (
-            <>
-              <Text style={styles.sectionTitle}>Remove from recall?</Text>
-              <Text style={styles.text}>
-                After removal, this memory will no longer appear in current search or Instructions. Its record and history
-                stay in the store. Already attached copies are unchanged. Existing agent cached text cannot be recalled.
-              </Text>
-              <Text style={styles.muted}>
-                Asserted by {assertedBy} · {assertionLabel(memory.assertionKind)}
-              </Text>
-              <View style={styles.actions}>
-                <Action
-                  styles={styles}
-                  tone="primary"
-                  label={retract.isPending ? "Removing…" : "Remove from recall"}
-                  disabled={retract.isPending}
-                  onPress={submitRemoval}
-                />
-                <Action
-                  styles={styles}
-                  tone="link"
-                  label="Keep memory"
-                  disabled={retract.isPending}
-                  onPress={closeRemoval}
-                />
-              </View>
-            </>
-          )}
-        </View>
-      ) : null}
 
       {showAttachment ? (
         <Section styles={styles} title="Attachment text">
@@ -319,7 +264,7 @@ export function MemoryDetail({
           );
         })}
         <View style={styles.field}>
-          <Text style={styles.label}>Timing</Text>
+          <Text style={styles.label}>When it applies</Text>
           <Text style={styles.text}>{timeLabel(memory)}</Text>
         </View>
       </Section>
@@ -396,6 +341,75 @@ export function MemoryDetail({
         To add this memory to a prompt, choose Memory in the message box attachment picker. Adding it does not send
         the message.
       </Text>
+
+      {memory.status === "active" ? (
+        <Section styles={styles} title="Recall controls">
+          <View style={styles.card}>
+            {!removalOpen ? (
+              <>
+                <Text style={styles.muted}>
+                  Removes this memory from current search and Instructions. Its record and history are kept.
+                </Text>
+                <View style={styles.actions}>
+                  <Action styles={styles} tone="danger" label="Remove from recall…" onPress={() => setConfirming(true)} />
+                </View>
+              </>
+            ) : verifying ? (
+              <Text style={styles.muted}>Checking the memory’s status…</Text>
+            ) : readFailed ? (
+              <>
+                <Text style={styles.danger}>Could not check the status. The removal may or may not have happened.</Text>
+                <View style={styles.actions}>
+                  <Action styles={styles} tone="primary" label="Check status" onPress={() => void verifyAfterError()} />
+                  <Action styles={styles} tone="link" label="Close" onPress={closeRemoval} />
+                </View>
+              </>
+            ) : retract.isError ? (
+              <>
+                <Text style={styles.danger}>Not removed. This memory is still active.</Text>
+                <Text style={styles.muted}>{errorMessage(retract.error)}</Text>
+                <View style={styles.actions}>
+                  <Action styles={styles} tone="secondary" label="Keep memory" onPress={closeRemoval} />
+                  <Action styles={styles} tone="danger" label="Remove from recall" onPress={submitRemoval} />
+                </View>
+              </>
+            ) : (
+              <>
+                <Text
+                  numberOfLines={2}
+                  accessibilityLabel={`Remove “${memory.title}” from recall?`}
+                  style={styles.sectionTitle}
+                >
+                  Remove “{memory.title}” from recall?
+                </Text>
+                <Text style={styles.text}>
+                  After removal, this memory will no longer appear in current search or Instructions. Its record and history
+                  stay in the store. Already attached copies are unchanged. Existing agent cached text cannot be recalled.
+                </Text>
+                <Text style={styles.muted}>
+                  Asserted by {assertedBy} · {assertionLabel(memory.assertionKind)}
+                </Text>
+                <View style={styles.actions}>
+                  <Action
+                    styles={styles}
+                    tone="secondary"
+                    label="Keep memory"
+                    disabled={retract.isPending}
+                    onPress={closeRemoval}
+                  />
+                  <Action
+                    styles={styles}
+                    tone="danger"
+                    label={retract.isPending ? "Removing…" : "Remove from recall"}
+                    disabled={retract.isPending}
+                    onPress={submitRemoval}
+                  />
+                </View>
+              </>
+            )}
+          </View>
+        </Section>
+      ) : null}
     </ScrollView>
   );
 }

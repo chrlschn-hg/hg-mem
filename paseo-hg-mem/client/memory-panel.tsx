@@ -17,6 +17,7 @@ import {
 } from "./hooks";
 import { subscribeMemorySearch, takeMemorySearch } from "./intent";
 import { directoryName, errorMessage } from "./labels";
+import { observePanelSize } from "./web";
 import { buildMemoryGraph, type MemoryGraphData, type MemoryGraphNode } from "./graph-model";
 import {
   ancestryFor,
@@ -112,6 +113,15 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
   const [saved, setSaved] = useState<MemoryRecord | null>(null);
   // Measured panel width drives the single-pane and split decisions.
   const [width, setWidth] = useState<number | null>(null);
+  const stopSizeWatch = useRef<() => void>(() => {});
+  const panelRef = useCallback((node: unknown) => {
+    stopSizeWatch.current();
+    stopSizeWatch.current = observePanelSize(node, (nextWidth, nextHeight) => {
+      setWidth(nextWidth);
+      setBodyHeight(nextHeight);
+    });
+  }, []);
+  useEffect(() => () => stopSizeWatch.current(), []);
   // Scroll offsets survive while a pane is covered, so Back lands where the reader was.
   const scrollMemory = useMemo<ScrollMemory>(() => new Map(), []);
 
@@ -718,9 +728,9 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
 
   // The primary identity row, with the tabs and New memory merged onto it only when the width fits them.
   const identity = (
-    <View style={{ gap: 4, flexGrow: 1, flexShrink: 1, minWidth: 0 }}>
-      <Text style={styles.title}>Memory</Text>
-      <Text style={styles.muted}>
+    <View style={{ gap: 4, flexGrow: 1, flexShrink: 1, flexBasis: 140, minWidth: 140, maxWidth: "100%" }}>
+      <Text style={styles.title} numberOfLines={1}>Memory</Text>
+      <Text style={styles.muted} numberOfLines={2}>
         Operator: {operatorReady ? operatorName : settings.status === "loading" ? "loading…" : "not set"} · Scope:{" "}
         {directoryName(directory)}
       </Text>
@@ -728,7 +738,7 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
     </View>
   );
   const tabs = (
-    <View style={[styles.segmented, headerMerged && { alignSelf: "flex-start", flexBasis: "auto" }]}>
+    <View style={[styles.segmented, { flexBasis: "auto" }, headerMerged && { alignSelf: "flex-start" }]}>
       <Chip
         styles={styles}
         segment
@@ -785,6 +795,7 @@ export function MemoryPanel({ workspaceId, host, theme, layout, onOpenSetup }: M
 
   return (
     <View
+      ref={panelRef as never}
       style={styles.root}
       onLayout={(event) => {
         setWidth(event.nativeEvent.layout.width);

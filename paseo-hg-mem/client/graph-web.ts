@@ -35,7 +35,7 @@ export const isWeb = Platform.OS === "web";
 export const GRAPH_START_DEADLINE_MS = 8000;
 // The vendored bundle carries its own react-dom, which requires the exact React version it was
 // built against (see vendor/reagraph-vendor.meta.json). Any other host React falls back.
-export const GRAPH_REACT_VERSION = "19.1.0";
+export const GRAPH_REACT_VERSION = "19.2.3";
 
 function describe(error: unknown): string {
   return error instanceof Error ? error.message : String(error);

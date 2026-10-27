@@ -36,6 +36,7 @@ export interface GraphCanvasViewProps {
   onSelect(id: string | null): void;
   /** Informational: called when the canvas enters its error state. The view renders its own message. */
   onError?(message: string): void;
+  onReady?(): void;
   /** Show the component's own node list (default true). Pass false when the parent already lists the nodes. */
   showNodeList?: boolean;
   /** Test harness only: forces one failure path. Production callers do not pass it. */
@@ -221,6 +222,8 @@ function WebGraph(props: GraphCanvasViewProps & { frame: object; total: number; 
   const stopWatchRef = useRef<() => void>(() => {});
   const onErrorRef = useRef(props.onError);
   onErrorRef.current = props.onError;
+  const onReadyRef = useRef(props.onReady);
+  onReadyRef.current = props.onReady;
 
   const fail = useCallback((text: string) => {
     // One failure per attempt: stop the watch so a later deadline cannot replace this message.
@@ -248,7 +251,10 @@ function WebGraph(props: GraphCanvasViewProps & { frame: object; total: number; 
     // "timeout" fault: never create the canvas, so the start deadline fires.
     if (fault !== "timeout") setMod(loaded.module);
     stopWatchRef.current = watchCanvas(containerRef.current, {
-      onReady: () => setPhase((current) => (current === "error" ? current : "ready")),
+      onReady: () => {
+        setPhase((current) => (current === "error" ? current : "ready"));
+        onReadyRef.current?.();
+      },
       onLost: () => fail("The WebGL context was lost."),
       onTimeout: () => fail("The graph canvas did not start within 8 seconds."),
     });

@@ -44,7 +44,8 @@ export function createStyles(theme: PluginTheme, compact: boolean) {
     },
     inputMultiline: { minHeight: 140, textAlignVertical: "top" },
     primary: {
-      height: control,
+      minHeight: control,
+      maxWidth: "100%",
       paddingHorizontal: 14,
       borderRadius: 8,
       alignItems: "center",
@@ -52,7 +53,8 @@ export function createStyles(theme: PluginTheme, compact: boolean) {
       backgroundColor: colors.accent,
     },
     secondary: {
-      height: control,
+      minHeight: control,
+      maxWidth: "100%",
       paddingHorizontal: 14,
       borderRadius: 8,
       alignItems: "center",
@@ -61,7 +63,20 @@ export function createStyles(theme: PluginTheme, compact: boolean) {
       borderColor: colors.border,
       backgroundColor: colors.surface1,
     },
-    link: { height: control, justifyContent: "center" },
+    // Outlined destructive action: the danger colour marks the border and text, and the surface stays neutral.
+    dangerButton: {
+      minHeight: control,
+      maxWidth: "100%",
+      paddingHorizontal: 14,
+      borderRadius: 8,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: colors.statusDanger,
+      backgroundColor: colors.surface1,
+    },
+    dangerButtonText: { color: colors.statusDanger, fontSize: 14, fontWeight: "600" },
+    link: { minHeight: control, justifyContent: "center" },
     chip: {
       minHeight: control,
       paddingHorizontal: 12,
@@ -128,7 +143,7 @@ export function createStyles(theme: PluginTheme, compact: boolean) {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      flexWrap: compact ? "wrap" : "nowrap",
+      flexWrap: "wrap",
       gap: 12,
       paddingBottom: 12,
       marginBottom: 16,
@@ -137,10 +152,10 @@ export function createStyles(theme: PluginTheme, compact: boolean) {
     },
     // Stacked header: identity and New memory on one row, the view tabs on the row beneath, divided from the panes below.
     headerStack: { gap: 12, paddingBottom: 12, marginBottom: 16, borderBottomWidth: 1, borderBottomColor: colors.border },
-    // Identity and New memory share one row at every width. Identity gives up width first, so the button stays beside it.
-    headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
+    // Keep identity readable; actions wrap below it when the row cannot fit.
+    headerRow: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12 },
     // Primary tabs and New memory as one right-aligned group beside the identity in the merged header.
-    actionGroup: { flexDirection: "row", alignItems: "center", flexShrink: 0, gap: 12 },
+    actionGroup: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "flex-end", marginLeft: "auto", maxWidth: "100%", flexShrink: 0, gap: 12 },
     // List | Graph: one grouped track. Its segments fill the track, and the track is the 36/44 control height.
     viewTrack: {
       flexDirection: "row",

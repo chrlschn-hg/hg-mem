@@ -32,7 +32,7 @@ When filesystem or Git operations fail in the sandbox, ask the Build Assistant t
 
 ## Stack and persistence
 
-- Paseo SDK/client 0.12.0, React 19.1.0, React Native 0.81.5, TypeScript, Zod.
+- Paseo SDK/client 0.13.0, React 19.2.3, React Native 0.86.3, TypeScript, Zod.
 - UI → typed RPC → `MemoryStore` → SQLite CLI + GraphQLite 0.12.0.
 - No Node SQLite driver, Python runtime, or parallel SDK writer.
 - Spawn without a shell; bind JSON values, never interpolate user SQL/Cypher.
@@ -73,7 +73,7 @@ stable properties, not GraphQLite internal node IDs.
 
 ## Graph renderer
 
-Reagraph 4.32.0 is prebundled in `client/vendor/` with private ReactDOM 19.1.0;
+Reagraph 4.32.0 is prebundled in `client/vendor/` with private ReactDOM 19.2.3;
 host React stays external. Preserve notices and metadata. Exact host React guard,
 web-only lazy loading, error boundary, startup timeout, and context-loss handling
 are deliberate. Never eagerly import the renderer on native. Test Use list recovery.
@@ -85,4 +85,4 @@ Async/GPU/process isolation is not guaranteed. See vendor README before rebuildi
 - [Lessons](docs/lessons.md)
 - [Graph UI](docs/memory-graph.md)
 - [Editing proposal, not shipped](docs/memory-editing-design.md)
-- [Paseo plugin docs](https://paseo.sh/docs/plugins/reference.md) — verify against installed 0.12 types; current docs may describe newer APIs.
+- [Paseo plugin docs](https://paseo.sh/docs/plugins/reference.md) — verify against installed 0.13 types; current docs may describe newer APIs.

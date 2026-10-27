@@ -87,6 +87,7 @@ export function MemoryGraph({
           selected={selectedId}
           onSelect={onSelect}
           onError={setRendererError}
+          onReady={() => setRendererError(null)}
           showNodeList={false}
         />
       </View>

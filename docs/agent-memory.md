@@ -33,6 +33,12 @@ a withdrawn assertion to evade removal.
 Open a memory in List or Graph. Read its complete text, source, scope, timing, and
 Observed/Inferred/Explicit attribution. No new Reviewed flag implies verified truth.
 
+Removal lives in the final **Recall controls** card, outside Advanced. Its outlined
+danger button opens an inline confirmation naming the memory; **Keep memory** comes
+first. Already attached and cached copies are unchanged. Narrow controls wrap and
+stack within the inspector. Cancellation and confirmation were checked with an
+isolated in-memory UI fixture; no real memories were changed.
+
 Remove from recall uses retraction: normal search, instructions, and current
 exploration exclude the record. Exact reads and revision evidence retain it as
 withdrawn. This is not permanent erasure and does not revive a predecessor. There

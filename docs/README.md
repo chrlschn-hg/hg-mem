@@ -9,6 +9,7 @@ Start with [README](../README.md), [AGENTS](../AGENTS.md), and [lessons](lessons
 - [Recall](../skill/memory-recall/SKILL.md), [write](../skill/memory-write/SKILL.md), [maintenance](../skill/memory-maintain/SKILL.md).
 - [Memory exploration](memory-exploration.md), [graph UI](memory-graph.md).
 - [Agent-first writing and human review](agent-memory.md).
+- [Paseo 0.13 migration](paseo-0.13.md): runtime versions and verification.
 - [Version-search review](version-search-review.md): physical growth and ranking concerns.
 - [Editing design](memory-editing-design.md): proposal; UI editing is not shipped.
 

@@ -12,6 +12,7 @@ export function Badge({ styles, text }: { styles: MemoryStyles; text: string }) 
 
 // Primary is reserved for the one main action in a view. Secondary is the default button.
 // Link is a quiet text action with the same height, so it lines up with buttons in a row.
+// Danger is the outlined destructive action. Use it only for an action that removes or withdraws.
 export function Action({
   styles,
   label,
@@ -23,11 +24,18 @@ export function Action({
   styles: MemoryStyles;
   label: string;
   onPress(): void;
-  tone?: "primary" | "secondary" | "link";
+  tone?: "primary" | "secondary" | "link" | "danger";
   disabled?: boolean;
   focusRef?: RefObject<View | null>;
 }) {
-  const container = tone === "primary" ? styles.primary : tone === "secondary" ? styles.secondary : styles.link;
+  const container =
+    tone === "primary"
+      ? styles.primary
+      : tone === "secondary"
+        ? styles.secondary
+        : tone === "danger"
+          ? styles.dangerButton
+          : styles.link;
   const text =
     tone === "primary"
       ? styles.primaryText
@@ -35,7 +43,9 @@ export function Action({
         ? styles.disabledText
         : tone === "secondary"
           ? styles.secondaryText
-          : styles.linkText;
+          : tone === "danger"
+            ? styles.dangerButtonText
+            : styles.linkText;
   return (
     <Pressable
       ref={focusRef}
