@@ -10,6 +10,7 @@ Start with [README](../README.md), [AGENTS](../AGENTS.md), and [lessons](lessons
 - [Memory exploration](memory-exploration.md), [graph UI](memory-graph.md).
 - [Agent-first writing and human review](agent-memory.md).
 - [Paseo 0.13 migration](paseo-0.13.md): runtime versions and verification.
+- [Paseo 0.14 compatibility](paseo-0.14.md): SDK update and session metadata.
 - [Version-search review](version-search-review.md): physical growth and ranking concerns.
 - [Editing design](memory-editing-design.md): proposal; UI editing is not shipped.
 

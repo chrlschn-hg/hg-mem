@@ -32,7 +32,7 @@ When filesystem or Git operations fail in the sandbox, ask the Build Assistant t
 
 ## Stack and persistence
 
-- Paseo SDK/client 0.13.0, React 19.2.3, React Native 0.86.3, TypeScript, Zod.
+- Paseo SDK/client 0.14.0, React 19.2.3, React Native 0.86.3, TypeScript, Zod.
 - UI → typed RPC → `MemoryStore` → SQLite CLI + GraphQLite 0.12.0.
 - No Node SQLite driver, Python runtime, or parallel SDK writer.
 - Spawn without a shell; bind JSON values, never interpolate user SQL/Cypher.
@@ -85,4 +85,4 @@ Async/GPU/process isolation is not guaranteed. See vendor README before rebuildi
 - [Lessons](docs/lessons.md)
 - [Graph UI](docs/memory-graph.md)
 - [Editing proposal, not shipped](docs/memory-editing-design.md)
-- [Paseo plugin docs](https://paseo.sh/docs/plugins/reference.md) — verify against installed 0.13 types; current docs may describe newer APIs.
+- [Paseo plugin docs](https://paseo.sh/docs/plugins/reference.md) — verify against installed 0.14 types; current docs may describe newer APIs.

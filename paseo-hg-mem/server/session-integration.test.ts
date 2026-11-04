@@ -8,6 +8,7 @@ const settings = () => MemorySettingsSchema.parse({ enabled: true, databasePath:
   sqlitePath: '/tools/sqlite3', extensionPath: '/tools/graphqlite.dylib', skillsDirectory: '/memory/skills', operatorId: 'operator:human' });
 const request = (patch: Partial<PluginSessionOpenRequest> = {}): PluginSessionOpenRequest => ({
   agentId: 'session-1', workspaceId: 'workspace-1', cwd: '/repo', provider: 'codex',
+  title: 'Memory integration test', labels: {}, tools: [], mcpServers: {},
   reason: 'create', purpose: 'interactive', env: { OTHER_PLUGIN: 'kept', HG_DB: '/wrong.db', HG_MEMORY_ERROR: 'old error' }, ...patch,
 });
 
@@ -21,6 +22,10 @@ test('delivers seven keys, uses daemon scopes and identity, preserves other over
   assert.equal(result.env.HG_SCOPE_IDS, '["scope:project"]');
   assert.equal(result.env.OTHER_PLUGIN, 'kept');
   assert.equal(result.env.HG_MEMORY_ERROR, undefined);
+  assert.equal(result.title, 'Memory integration test');
+  assert.deepEqual(result.labels, {});
+  assert.deepEqual(result.tools, []);
+  assert.deepEqual(result.mcpServers, {});
   assert.equal(integration.snapshot().lastAttempt?.state, 'injected');
 });
 
