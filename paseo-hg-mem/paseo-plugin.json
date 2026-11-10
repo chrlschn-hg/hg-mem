@@ -3,6 +3,6 @@
   "name": "Memory",
   "media": [],
   "requirements": {
-    "paseo": ">=0.13.0 <0.15.0"
+    "paseo": ">=0.13.0 <0.16.0"
   }
 }

@@ -2,7 +2,7 @@ Memory keeps personal preferences, project notes and corrective instructions in 
 
 Inside Memories, switch between List and Graph. The web and desktop graph shows the current result page and its filing, subject and revision links. Select a node to review it, or expand a filing or subject node to load more connections. Moving nodes changes the view only. The graph has a 120-node limit and a selectable node list. If the renderer fails, retry it or continue in List. Native clients retain list-based browsing. Graph labels may load font data from external font services.
 
-Choose an operator, a database location, an extension-enabled SQLite CLI and GraphQLite in Memory setup. This first iteration supports Paseo 0.13 and 0.14 on macOS Apple Silicon, Homebrew SQLite and the official GraphQLite 0.12.0 library. Setup creates a new managed store or checks an existing managed store.
+Choose an operator, a database location, an extension-enabled SQLite CLI and GraphQLite in Memory setup. This first iteration supports Paseo 0.13 through 0.15 on macOS Apple Silicon, Homebrew SQLite and the official GraphQLite 0.12.0 library. Setup creates a new managed store or checks an existing managed store.
 
 Saves use explicit directory or global scope. A directory applies to that directory and its descendants; a separate worktree needs its own scope or an explicit project binding. Purpose and Required instruction are separate choices.
 

@@ -16,7 +16,7 @@ Agent skills: start with `memory-workflow`; it routes to `memory-recall`,
 
 ## Install and run
 
-This iteration targets **Paseo 0.13.x and 0.14.x**, macOS Apple Silicon, and Homebrew SQLite
+This iteration targets **Paseo 0.13.x through 0.15.x**, macOS Apple Silicon, and Homebrew SQLite
 3.53 or newer. GraphQLite is pinned to the official 0.12.0 macOS arm64 library.
 
 Install the latest revision:
